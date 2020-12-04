@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellRPC", "PowerShellRPC.csproj", "{12AC70C6-6B88-4937-B068-D2EB0EF3D823}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12AC70C6-6B88-4937-B068-D2EB0EF3D823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12AC70C6-6B88-4937-B068-D2EB0EF3D823}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12AC70C6-6B88-4937-B068-D2EB0EF3D823}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12AC70C6-6B88-4937-B068-D2EB0EF3D823}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
