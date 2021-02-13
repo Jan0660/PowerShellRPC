@@ -9,7 +9,28 @@ namespace PowerShellRPC
 {
     public static class Statics
     {
-        public static DiscordRpcClient client;
+        public static DiscordRpcClient Client;
+        public static string LargeImageKey = "pwsh7";
+        // ReSharper disable once FieldCanBeMadeReadOnly.Global
+        public static string LargeImageText = null;
+        // ReSharper disable once FieldCanBeMadeReadOnly.Global
+        public static string SmallImageKey = null;
+        // ReSharper disable once FieldCanBeMadeReadOnly.Global
+        public static string SmallImageText = null;
+        public static string ApplicationId = "784135633950081095";
+
+        /// <summary>
+        /// Shortens a string to the specified <paramref name="length"></paramref>, ending the string with "...".
+        /// </summary>
+        public static string Shorten(this string str, int length)
+        {
+            if (str.Length >= length)
+            {
+                return str.Remove(length - 3) + "...";
+            }
+
+            return str;
+        }
     }
 
     [Cmdlet("Start", "DRPC")]
@@ -19,19 +40,19 @@ namespace PowerShellRPC
         {
             #region init client
 
-            client = new DiscordRpcClient("784135633950081095",
+            Client = new DiscordRpcClient(Statics.ApplicationId,
                 autoEvents: true, //Should the events be automatically called?
                 client: new DiscordRPC.IO.ManagedNamedPipeClient() //The pipe client to use. Required in mono to be changed.);
             );
-            client.RegisterUriScheme();
+            Client.RegisterUriScheme();
             
             //Subscribe to events
-            client.OnReady += (sender, e) => { WriteVerbose($"Received Ready from user {e.User.Username}"); };
+            Client.OnReady += (sender, e) => { WriteVerbose($"Received Ready from user {e.User.Username}"); };
 
-            client.OnPresenceUpdate += (sender, e) => { WriteVerbose($"Received Update! {e.Presence}"); };
+            Client.OnPresenceUpdate += (sender, e) => { WriteVerbose($"Received Update! {e.Presence}"); };
 
-            client.Initialize();
-            client.ClearPresence();
+            Client.Initialize();
+            Client.ClearPresence();
 
             #endregion
 
@@ -44,18 +65,20 @@ namespace PowerShellRPC
     {
         protected override void ProcessRecord()
         {
-            string curdir = this.SessionState.Path.CurrentLocation.Path;
+            string curdir = this.SessionState.Path.CurrentLocation.Path.Replace('\\', '/');
             string dir =
-                curdir.Replace(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                curdir.Replace(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace('\\', '/'),
                     "~");
-            client.SetPresence(new RichPresence()
+            Client.SetPresence(new RichPresence()
             {
-                State = dir.Length < 3 ? curdir : dir,
+                State = dir.Length < 3 ? curdir.Shorten(128) : dir.Shorten(128),
                 Details = GetDetails(),
                 Assets = new ()
                 {
-                    LargeImageKey = "pwsh7",
-                    LargeImageText = $"{this.Host.Name} {this.Host.Version}"
+                    LargeImageKey = Statics.LargeImageKey,
+                    LargeImageText = LargeImageText ?? $"{this.Host.Name} {this.Host.Version}",
+                    SmallImageKey = SmallImageKey,
+                    SmallImageText = SmallImageText
                 }
             });
         }
@@ -80,8 +103,8 @@ namespace PowerShellRPC
     {
         protected override void ProcessRecord()
         {
-            client.ClearPresence();
-            client.Dispose();
+            Client.ClearPresence();
+            Client.Dispose();
         }
     }
 }
